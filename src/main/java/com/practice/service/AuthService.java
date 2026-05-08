@@ -23,16 +23,12 @@ public class AuthService {
 
 	private final JwtService jwtService;
 
-
 	public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
 		super();
 		this.userRepository = userRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.jwtService = jwtService;
 	}
-
-
-
 
 	public AuthResponseDto register(RegisterRequestDto request) {
 
@@ -55,14 +51,14 @@ public class AuthService {
 
 		String token = jwtService.generateToken(user);
 
-		return new AuthResponseDto(token);
+		return new AuthResponseDto(token); 
 	}
 
 	public AuthResponseDto login(LoginRequestDto request) {
 		User user = userRepository.findByEmail(request.getEmail())
 				.orElseThrow(() -> new RuntimeException("Invalid email or password"));
 
-		boolean isPasswordMatched = passwordEncoder.matches(request.getEmail(), user.getPassword());
+		boolean isPasswordMatched = passwordEncoder.matches(request.getPassword(), user.getPassword());
 
 		if (!isPasswordMatched) {
 
