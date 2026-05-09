@@ -1,6 +1,5 @@
 package com.practice.security;
 
-import java.security.Key;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -11,74 +10,55 @@ import com.practice.model.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JwtService {
 
-	@Value("${jwt.secret}")
-	private String secretKey;
+    @Value("${jwt.secret}")
+    private String secret;
 
-	@Value("${jwt.expiration}")
-	private long jwtExpiration;
+    @Value("${jwt.expiration}")
+    private long expiration;
 
-	public String generateToken(User user) {
- 
-		return Jwts.builder()
-				.setSubject(user.getEmail())
-				.claim("role", user.getRole().name())
-				.setIssuedAt(new Date())
-				.setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
-				.signWith(getSigningKey(), SignatureAlgorithm.HS256)
-				.compact();
-	}
+    // Generate JWT Token
+    public String generateToken(User user) {
 
-	public String extractUsername(String token) {
+        return Jwts.builder()
+                .setSubject(user.getEmail()) // store email
+                .claim("role", user.getRole().name()) // store role
+                .setIssuedAt(new Date()) // token created time
+                .setExpiration(new Date(System.currentTimeMillis() + expiration)) // expiry time
+                .signWith(SignatureAlgorithm.HS256, secret) // sign token
+                .compact();
+    }
 
-		return extractAllClaims(token).getSubject();
-	}
- 
-	public String extractRole(String token) {
+    // Extract email from token
+    public String extractUsername(String token) {
+        return getClaims(token).getSubject();
+    }
 
-		return extractAllClaims(token)
-				.get("role", String.class);
-	}
+    // Validate token
+    public boolean validateToken(String token, String email) {
 
-	public boolean validateToken(String token, String email) {
+        String extractedEmail = extractUsername(token);
 
-		String username = extractUsername(token);
+        return extractedEmail.equals(email)
+                && !isTokenExpired(token);
+    }
 
-		return username.equals(email)
-				&& !isTokenExpired(token);
-	}
+    // Check token expired or not
+    private boolean isTokenExpired(String token) {
+        return getClaims(token)
+                .getExpiration()
+                .before(new Date());
+    }
 
-	private boolean isTokenExpired(String token) {
+    // Extract all claims from token
+    private Claims getClaims(String token) {
 
-		return extractExpiration(token)
-				.before(new Date());
-	}
-
-	private Date extractExpiration(String token) {
-
-		return extractAllClaims(token)
-				.getExpiration();
-	}
-
-	private Claims extractAllClaims(String token) {
-
-		return Jwts.parserBuilder()
-				.setSigningKey(getSigningKey())
-				.build()
-				.parseClaimsJws(token)
-				.getBody();
-	}
-
-	private Key getSigningKey() {
-
-		byte[] keyBytes =
-				Decoders.BASE64.decode(secretKey);
-
-		return Keys.hmacShaKeyFor(keyBytes);
-	}
+        return Jwts.parser()
+                .setSigningKey(secret)
+                .parseClaimsJws(token)
+                .getBody();
+    }
 }

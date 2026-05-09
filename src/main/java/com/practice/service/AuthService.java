@@ -11,19 +11,16 @@ import com.practice.model.entity.User;
 import com.practice.repository.UserRepository;
 import com.practice.security.JwtService;
 
-import lombok.RequiredArgsConstructor;
-
 @Service
-@RequiredArgsConstructor
+
 public class AuthService {
 
-	private final UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    
 
-	private final PasswordEncoder passwordEncoder;
-
-	private final JwtService jwtService;
-
-	public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
 		super();
 		this.userRepository = userRepository;
 		this.passwordEncoder = passwordEncoder;
@@ -31,42 +28,28 @@ public class AuthService {
 	}
 
 	public AuthResponseDto register(RegisterRequestDto request) {
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new RuntimeException("Email already exists");
+        }
 
-		if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+        User user = new User();
+        user.setName(request.getName());
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(Role.USER);
+        
+        userRepository.save(user);
+        return new AuthResponseDto(jwtService.generateToken(user)); 
+    }
 
-			throw new RuntimeException("Email already exists");
-		}
+    public AuthResponseDto login(LoginRequestDto request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
 
-		User user = new User();
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid credentials");
+        }
 
-		user.setName(request.getName());
-
-		user.setEmail(request.getEmail());
-
-		user.setPassword(passwordEncoder.encode(request.getPassword()));
-
-		user.setRole(Role.USER);
-
-		userRepository.save(user);
-
-		String token = jwtService.generateToken(user);
-
-		return new AuthResponseDto(token); 
-	}
-
-	public AuthResponseDto login(LoginRequestDto request) {
-		User user = userRepository.findByEmail(request.getEmail())
-				.orElseThrow(() -> new RuntimeException("Invalid email or password"));
-
-		boolean isPasswordMatched = passwordEncoder.matches(request.getPassword(), user.getPassword());
-
-		if (!isPasswordMatched) {
-
-			throw new RuntimeException("Invalid email or password");
-		}
-
-		String token = jwtService.generateToken(user);
-
-		return new AuthResponseDto(token);
-	}
+        return new AuthResponseDto(jwtService.generateToken(user));
+    }
 }
