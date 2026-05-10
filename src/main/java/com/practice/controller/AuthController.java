@@ -11,6 +11,7 @@ import com.practice.model.dto.request.RegisterRequestDto;
 import com.practice.model.dto.response.AuthResponseDto;
 import com.practice.service.AuthService;
 
+
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -33,6 +34,6 @@ public class AuthController {
 			@RequestBody LoginRequestDto request) {
 
 		return ResponseEntity.ok(authService.login(request));
-	}
+	} 
  
 } 
