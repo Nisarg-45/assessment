@@ -18,13 +18,12 @@ public class Category {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	@Column(name = "categoryName")
+	@Column(name = "categoryName") 
 	private String name;
-
-	private String description;
+ 
+	private String description; 
 	 @OneToMany(mappedBy = "category",cascade = CascadeType.ALL)
 	    private List<Course> courses;
-
 	public List<Course> getCourses() {
 		return courses;
 	}

@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8081
 
 spring:
   datasource:
@@ -7,7 +7,11 @@ spring:
     username: postgres
     password: nisarg@0926
     driver-class-name: org.postgresql.Driver
-
+  mvc:
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: false
   jpa:
     hibernate:
       ddl-auto: update
@@ -15,4 +19,4 @@ spring:
 
 jwt:
   secret: YourSecretKeyMustBeVeryLongAndSecureToAvoidThisError12345678
-  expiration: 86400000					
+  expiration: 86400000 

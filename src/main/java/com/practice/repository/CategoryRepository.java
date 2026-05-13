@@ -19,7 +19,7 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
 
 	@Query("""
 			SELECT new com.practice.model.projection.CategoryProjection(
-			 c.id,
+			 c.id,                                                                             
 			 c.name
 			 )
 			FROM Category c

@@ -20,8 +20,8 @@ import com.practice.service.CategoryService;
 @RequestMapping("/categories")
 public class CategoryController {
 	private final CategoryService categoryService;
-
-	public CategoryController(CategoryService categoryService) {
+	
+ 	public CategoryController(CategoryService categoryService) {
 		this.categoryService = categoryService;
 	}
 	 
@@ -30,7 +30,7 @@ public class CategoryController {
 			
 		return new GenericResponse<>(categoryService.createCategory(request));
 	}
-	
+
 	@GetMapping
 	public GenericResponse<List<CategoryResponseDto>> getAllCategories(){
 		
@@ -43,7 +43,7 @@ public class CategoryController {
 	public GenericResponse<CategoryResponseDto> getById(@PathVariable Integer id){
 		return new GenericResponse<>(categoryService.getById(id));
 	}
-	
+	 
 	@DeleteMapping("/{id}")
 	public void deleteById(@PathVariable Integer id) {
 		 categoryService.deleteById(id);

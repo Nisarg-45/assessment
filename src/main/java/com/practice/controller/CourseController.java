@@ -92,7 +92,7 @@ public class CourseController {
     // GET COURSES BY CATEGORY
     @GetMapping("/category/{categoryId}")
     public GenericResponse<
-            List<CourseResponseDto>>
+            List<CourseResponseDto>> 
     getCoursesByCategory(
             @PathVariable Integer categoryId) {
 
@@ -106,11 +106,18 @@ public class CourseController {
     // PROJECTION API
     @GetMapping("/names")
     public GenericResponse<
-            List<CourseProjection>>
+            List<CourseProjection>> 
     getCourseNames() {
-
+ 
         return new GenericResponse<>(
                 courseService.getCourseNames()
         );
+    } 
+    
+    @PutMapping("/{courseId}/category/{categoryId}")
+    
+    public GenericResponse<CourseResponseDto> assignCourseToCategory(@PathVariable Integer courseId, @PathVariable Integer categoryId){
+    	
+    		return new GenericResponse<>(courseService.assignCourseToCategory(categoryId, courseId));
     }
 }

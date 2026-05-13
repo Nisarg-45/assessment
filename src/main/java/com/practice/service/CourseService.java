@@ -156,26 +156,30 @@ public class CourseService {
         this.courseRepository = courseRepository;
         this.categoryRepository = categoryRepository;
         this.modelMapper = modelMapper;
-    }
-
+    } 
+ 
     // CREATE
     public CourseResponseDto createCourse(CourseRequestDto request) {
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
-
+ 
         Course course = modelMapper.map(request, Course.class);
-        course.setId(null); 
-        course.setCategory(category);
-
+        course.setId(null);  
+        course.setCategory(category);  
+   
         Course saved = courseRepository.save(course);
         return modelMapper.map(saved, CourseResponseDto.class);
     }
 
     // GET ALL
     public List<CourseResponseDto> getAllCourses() {
-        return courseRepository.findAll().stream()
-                .map(course -> modelMapper.map(course, CourseResponseDto.class))
-                .toList();
+//        return courseRepository.findAll().stream()
+//                .map(course -> modelMapper.map(course, CourseResponseDto.class))
+//                .toList();
+    	
+    	return courseRepository.findAll().stream()
+    			.map(course-> modelMapper.map(course,CourseResponseDto.class))
+    			.toList();
     }
 
     // GET BY ID
@@ -198,7 +202,7 @@ public class CourseService {
     public CourseResponseDto updateCourse(Integer id, CourseRequestDto request) {
         Course existingCourse = courseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
-
+ 
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
@@ -213,14 +217,31 @@ public class CourseService {
     }
 
     // GET BY CATEGORY
-    public List<CourseResponseDto> getCoursesByCategory(Integer categoryId) {
-        return courseRepository.getCoursesByCategory(categoryId).stream()
-                .map(course -> modelMapper.map(course, CourseResponseDto.class))
-                .toList();
+//    public List<CourseResponseDto> getCoursesByCategory(Integer categoryId) {
+//        return courseRepository.getCoursesByCategory(categoryId).stream()
+//                .map(course -> modelMapper.map(course, CourseResponseDto.class))
+//                .toList(); 
+//    } 
+      
+    public List<CourseResponseDto> getCoursesByCategory(Integer categoryId){
+    	return courseRepository.findById(categoryId).stream()
+    			.map(course -> modelMapper.map(course, CourseResponseDto.class)).toList();
     }
 
     // PROJECTION
     public List<CourseProjection> getCourseNames() {
-        return courseRepository.getCourseNames();
+        return courseRepository.getCourseNames().stream().map(course-> modelMapper.map(course, CourseProjection.class))
+        		.toList();
+    }
+    
+    public CourseResponseDto assignCourseToCategory(Integer categoryId, Integer courseId) {
+    	Course course = courseRepository.findById(courseId).orElseThrow(()-> new ResourceNotFoundException("not Found"));
+    	Category category = categoryRepository.findById(categoryId).orElseThrow(()-> new ResourceNotFoundException("not found"));
+    	
+    	course.setCategory(category);
+    	
+    	Course updated =  courseRepository.save(course);
+
+    		return modelMapper.map(updated, CourseResponseDto.class);
     }
 }

@@ -37,7 +37,7 @@ public class CategoryService {
 //		response.setDescription(saved.getDescription());
 //		 
 //		return response;
-
+ 
 	Category category = modelMapper.map(request,Category.class);
 	
 	Category saved = categoryRepository.save(category);
@@ -50,6 +50,9 @@ public class CategoryService {
 	    List<Category> categories =
 	            categoryRepository.findAll();
 
+//	    if(categories.isEmpty()) { 
+//	    		
+//	    }
 	    return categories.stream() 
 	            .map(category ->
 	                    modelMapper.map(category,CategoryResponseDto.class)
@@ -90,5 +93,7 @@ public class CategoryService {
 	    );
 	    
 	}
+	
+	
 
 }

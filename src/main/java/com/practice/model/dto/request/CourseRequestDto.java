@@ -2,13 +2,13 @@ package com.practice.model.dto.request;
 
 public class CourseRequestDto {
 
-    private String title;
+	private String title;
 
-    private String description;
+	private String description;
 
-    private Double price;
+	private Double price;
 
-    private Integer categoryId;
+	private Integer categoryId;
 
 	public String getTitle() {
 		return title;
@@ -41,7 +41,10 @@ public class CourseRequestDto {
 	public void setCategoryId(Integer categoryId) {
 		this.categoryId = categoryId;
 	}
-	public CourseRequestDto() {}
+
+	public CourseRequestDto() {
+	}
+
 	public CourseRequestDto(String title, String description, Double price, Integer categoryId) {
 		super();
 		this.title = title;
@@ -50,5 +53,4 @@ public class CourseRequestDto {
 		this.categoryId = categoryId;
 	}
 
-    // getters setters
 }

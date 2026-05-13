@@ -20,7 +20,7 @@ public class AuthController {
 
 	public AuthController(AuthService authService) {
 
-		this.authService = authService;
+		this.authService = authService; 
 	}
 
 	@PostMapping("/register")
